@@ -5,7 +5,7 @@ import os
 import sys
 import re
 from base64 import b64encode
-
+from datetime import datetime
 
 def write_configfile(filename):
     text = r"""
@@ -100,13 +100,17 @@ def upload_workout(user, token, workout):
 
 def main():
     # Read config file
-    CONFIGFILE = 'karoosync.cfg'
+    username = os.path.expanduser('~/Documents/karoosync.cfg')
+    if not (os.path.exists(username)):
+        os.mkdir(username)
+    CONFIGFILE = username + '/karoosync.cfg'
     config = configparser.ConfigParser(interpolation=None)
 
     config_exists = os.path.exists(CONFIGFILE)
     if config_exists:
         try:
             config.read(CONFIGFILE)
+            TODAY_ONLY = config['INTERVALS.ICU']['TODAY_ONLY']
             WORKOUT_OLDEST_DATE = config['INTERVALS.ICU']['WORKOUT_OLDEST_DATE']
             WORKOUT_NEWEST_DATE = config['INTERVALS.ICU']['WORKOUT_NEWEST_DATE']
             INTERVALS_ICU_ID = config['INTERVALS.ICU']['INTERVALS_ICU_ID']
@@ -126,7 +130,12 @@ def main():
     user = get_userid(token)
 
     # Get list of all workouts between these dates, default = only today
-    workouts = get_workouts(WORKOUT_OLDEST_DATE, WORKOUT_NEWEST_DATE, INTERVALS_ICU_ID, INTERVALS_ICU_APIKEY)
+    if(TODAY_ONLY):
+        date = datetime.today().strftime('%Y-%m-%d')
+        workouts = get_workouts(date, date, INTERVALS_ICU_ID, INTERVALS_ICU_APIKEY)
+    else:
+        workouts = get_workouts(WORKOUT_OLDEST_DATE, WORKOUT_NEWEST_DATE, INTERVALS_ICU_ID, INTERVALS_ICU_APIKEY)
+
     if workouts:
         for workout in workouts:
             workout_id = workout['id']
