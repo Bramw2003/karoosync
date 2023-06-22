@@ -98,13 +98,9 @@ def upload_workout(user, token, workout):
     response = call_api(url, "POST", headers=headers, files=workout)
     return response
 
-
 def main():
     # Read config file
-    username = os.path.expanduser('~/Documents/karoosync.cfg')
-    if not (os.path.exists(username)):
-        os.mkdir(username)
-    CONFIGFILE = username + '/karoosync.cfg'
+    CONFIGFILE = os.path.expanduser('~/Documents/karoosync') + '/karoosync.txt'
     config = configparser.ConfigParser(interpolation=None)
 
     config_exists = os.path.exists(CONFIGFILE)
