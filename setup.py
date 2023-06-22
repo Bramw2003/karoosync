@@ -8,7 +8,7 @@ Usage:
 from setuptools import setup
 
 APP = ['karoosync.py']
-DATA_FILES = ['karoosync.cfg']
+DATA_FILES = []
 OPTIONS = {}
 
 setup(
